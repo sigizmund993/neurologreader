@@ -30,6 +30,7 @@ class Log:
         self.content = content
         self.i = 0
         self.length = len(self.content)-1
+        self.frame = 0
     def get_iteration(self)-> tuple[list[Robot],float,float]:
         bots:list[Robot] = []
         ball_pos_x_str = ""
@@ -41,11 +42,13 @@ class Log:
         ball_pos_x = float(ball_pos_x_str)
         ball_pos_y_str = ""
         char = ""
-        while self.i<self.length and char != "\n":
+        while self.i<self.length and char != "e":
             char = self.content[self.i]
             ball_pos_y_str+=char
             self.i +=1
         ball_pos_y = float(ball_pos_y_str)
+        
+        print(ball_pos_x_str,ball_pos_y_str)
         rob_id = 0
         col_str = "y "
         while self.i<self.length and(col_str == "y " or col_str == "b "):
@@ -93,9 +96,9 @@ class Log:
                 self.i +=1
             rob_ang = float(rob_ang_str)
             bots.append(Robot(col,rob_id,rob_pos_x,rob_pos_y,rob_ang))
-
-        for bot in bots:
-            print(bot)
+        self.frame +=1
+        # for bot in bots:
+        #     print(bot)
         self.i-=5
         return bots,ball_pos_x,ball_pos_y
 
@@ -104,25 +107,26 @@ file_name = "log.txt"
 with open(file_name, 'r') as file:
     content = file.read()
 log = Log(content)
-bots,ball_pos_x,ball_pos_y = log.get_iteration()
 
 
-ax.clear()
-rect = patches.Rectangle((-4500, -3000), 4500*2, 3000*2, linewidth=2, edgecolor='blue', facecolor='green')
-ax.add_patch(rect)
-for bot in bots:
-    if(bot.color == Color.BLUE):
-        color = (0,0,1)
-    else:
-        color = (1,1,0)
-    ax.plot(bot.x,bot.y,marker = 'o',color = color)
-ax.plot(ball_pos_x,ball_pos_y,marker = 'o',color = 'orange')
-print(ball_pos_x,ball_pos_y)
-ax.set_aspect('equal', adjustable='box')
-ax.set_xlim(-5000, 5000)
-ax.set_ylim(-3500, 3500)
-# ax.grid(True)
-plt.xlabel('Ось X')
-plt.ylabel('Ось Y')
-plt.show()
+while True:
+    bots,ball_pos_x,ball_pos_y = log.get_iteration()
+    ax.clear()
+    rect = patches.Rectangle((-4500, -3000), 4500*2, 3000*2, linewidth=2, edgecolor='blue', facecolor='green')
+    ax.add_patch(rect)
+    for bot in bots:
+        if(bot.color == Color.BLUE):
+            color = (0,0,1)
+        else:
+            color = (1,1,0)
+        ax.plot(bot.x,bot.y,marker = 'o',color = color)
+    ax.plot(ball_pos_x,ball_pos_y,marker = 'o',color = 'orange')
+    # print(ball_pos_x,ball_pos_y)
+    ax.set_aspect('equal', adjustable='box')
+    ax.set_xlim(-5000, 5000)
+    ax.set_ylim(-3500, 3500)
+    # ax.grid(True)
+    plt.xlabel('Ось X')
+    plt.ylabel('Ось Y')
+    plt.pause(0.001)
 print("end of log")
